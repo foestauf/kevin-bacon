@@ -1,0 +1,11 @@
+{
+  "name": "@foebacon/common",
+  "version": "0.0.1",
+  "main": "bin/index.js",
+  "scripts": {
+    "compile": "tsc -b",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Foestauf",
+  "license": "MIT"
+}

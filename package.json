@@ -1,0 +1,19 @@
+{
+  "name": "Bacon",
+  "private": true,
+  "scripts": {
+    "compile": "tsc -b -w -i",
+    "eslint": "eslint src/**/**.{ts,tsx}",
+    "eslint:fix": "eslint --fix src/**/**.{ts,tsx}"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "ts-node": "^10.8.1"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {
+    "typescript": "^4.7.4"
+  }
+}

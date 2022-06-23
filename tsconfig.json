@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+        "incremental": true,
+        "target": "es2019",
+        "jsx": "react-jsx",
+        "module": "commonjs",
+        "declaration": true,
+        "sourceMap": true,
+        "strict": true,
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "rootDir": "./packages",
+        "outDir": "./superbin"
+    },
+    "references": [
+        {
+            "path": "./packages/common"
+        },
+        {
+            "path": "./packages/web"
+        },
+        {
+            "path": "./packages/server"
+        }
+    ],
+    "files": []
+}
