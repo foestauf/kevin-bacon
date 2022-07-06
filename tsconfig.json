@@ -2,7 +2,6 @@
     "compilerOptions": {
         "incremental": true,
         "target": "es2019",
-        "jsx": "react-jsx",
         "module": "commonjs",
         "declaration": true,
         "sourceMap": true,
@@ -12,6 +11,7 @@
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "rootDir": "./packages",
+        "baseUrl": "./packages",
         "outDir": "./superbin"
     },
     "references": [
@@ -25,5 +25,5 @@
             "path": "./packages/server"
         }
     ],
-    "files": []
+    "files": [],
 }

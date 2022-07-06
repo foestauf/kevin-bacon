@@ -13,14 +13,14 @@ services:
       - '5432:5432'
   backend:
     build:
-      context: apps/server
+      context: packages/server
       dockerfile: Dockerfile
     container_name: backend-bacon
     # command: sh -c "npm install && npm run start:dev"
     depends_on:
       - database
     volumes:
-      - ./apps/server/:/app
+      - ./packages/server/:/app
       - node-modules:/app/node_modules
       # - dist:/app/dist
     ports:

@@ -1,4 +1,4 @@
-import { MovieEntity } from 'src/movies/entities/movie.entity';
+import { MovieEntity } from "src/movies/entities/movie.entity";
 import {
   Column,
   CreateDateColumn,
@@ -7,11 +7,12 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from 'typeorm';
+} from "typeorm";
+import { Images } from "src/types/images";
 
-@Entity('actors')
+@Entity("actors")
 export class ActorEntity {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column()
@@ -29,7 +30,7 @@ export class ActorEntity {
   @Column({ nullable: true })
   gender: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   known_for_department: string;
 
   @Column({ nullable: true })
@@ -44,7 +45,7 @@ export class ActorEntity {
   @Column({ nullable: true })
   place_of_birth: string;
 
-  @Column({ nullable: true, type: 'numeric' })
+  @Column({ nullable: true, type: "numeric" })
   popularity: number;
 
   @Column({ nullable: true })
@@ -54,8 +55,11 @@ export class ActorEntity {
   tmdbId: number;
 
   @ManyToMany(() => MovieEntity, { cascade: true, nullable: true })
-  @JoinTable({ name: 'cast' })
+  @JoinTable({ name: "cast" })
   movies: MovieEntity[];
+
+  @Column({ type: "jsonb", nullable: true })
+  profileImages: Images[] | null;
 
   @CreateDateColumn()
   createdAt: Date;

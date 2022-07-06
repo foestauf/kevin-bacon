@@ -68,9 +68,8 @@ export class MoviesService {
         original_language: data.original_language,
         tmdbId: data.id,
       })
-      .orUpdate({
-        conflict_target: ["tmdbId"],
-        overwrite: [
+      .orUpdate(
+        [
           "overview",
           "poster_path",
           "release_date",
@@ -88,7 +87,8 @@ export class MoviesService {
           "original_language",
           "updatedAt",
         ],
-      })
+        ["tmdbId"]
+      )
       .returning("*")
       .execute()
       .then(async (res) => {

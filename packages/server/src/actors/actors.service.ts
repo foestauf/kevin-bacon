@@ -11,6 +11,8 @@ import { InjectQueue } from "@nestjs/bull";
 import { Queue } from "bull";
 import { axiosClient } from "src/utils/axiosClient";
 import { MovieEntity } from "src/movies/entities/movie.entity";
+import { TmdbService } from "src/tmdb/tmdb.service";
+import { ActorProfile } from "./types";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const dayjs = require("dayjs");
 
@@ -22,7 +24,8 @@ export class ActorsService {
     @InjectQueue("actor-bulk-update")
     private readonly actorBulkUpdateQueue: Queue,
     @InjectRepository(MovieEntity)
-    private readonly movieRepo: Repository<MovieEntity>
+    private readonly movieRepo: Repository<MovieEntity>,
+    private readonly tmdbService: TmdbService
   ) {}
 
   counter = 0;
@@ -31,9 +34,35 @@ export class ActorsService {
     return await this.actorsRepo.find();
   }
 
+  async getPersonDetails(id: string) {
+    const actorEntity = this.findOne(id);
+  }
+
+  async getPersonImages(id: string) {
+    const config = this.tmdbService.getConfig();
+    const person = await this.actorsRepo.findOneOrFail({
+      where: { id },
+      relations: {
+        profileImages: true,
+      },
+    });
+  }
+
+  async fetchPersonProfileImages(tmdbId: number) {
+    const {
+      data: { profiles },
+    } = await axiosClient.get(`/person/${tmdbId}/images`);
+    return profiles;
+  }
+
   async findOne(id: string): Promise<ActorEntity> {
     const actor = await this.actorsRepo
-      .findOneOrFail({ where: { id }, relations: ["movies"] })
+      .findOneOrFail({
+        where: { id },
+        relations: {
+          movies: true,
+        },
+      })
       .then(async (actorEntity) => {
         const day = dayjs();
         // Adult is intentionally left null so we know if this actor has ever been updated or not
@@ -102,13 +131,13 @@ export class ActorsService {
         deathday: data.deathday,
         biography: data.biography,
         place_of_birth: data.place_of_birth,
+        profileImages: await this.fetchPersonProfileImages(tmdbId),
         imdb_id: data.imdb_id,
         homepage: data.homepage,
         popularity: data.popularity,
       })
-      .orUpdate({
-        conflict_target: ["tmdbId"],
-        overwrite: [
+      .orUpdate(
+        [
           "name",
           "profile_path",
           "birthday",
@@ -118,13 +147,14 @@ export class ActorsService {
           "deathday",
           "biography",
           "place_of_birth",
+          "profileImages",
           "imdb_id",
           "homepage",
           "popularity",
           "updatedAt",
         ],
-      })
-
+        ["tmdbId"]
+      )
       .returning("*")
       .execute()
       .then(async (res) => {
@@ -149,6 +179,12 @@ export class ActorsService {
           .of(actor)
           .add(newMovies)
           .catch((err) => console.log(err));
+        // await this.actorsRepo
+        //   .createQueryBuilder()
+        //   .update(ActorEntity)
+        //   .where("tmdbId = :tmdbId", { tmdbId })
+        //   .execute()
+        //   .catch((err) => console.log(err));
         return res;
       });
 
@@ -185,8 +221,13 @@ export class ActorsService {
   async searcActorsByName(name: string) {
     const query = this.actorsRepo.createQueryBuilder("actor");
     query.where("actor.name ILIKE :name", { name: `${name}%` });
+    query.andWhere("actor.known_for_department = :known_for_department", {
+      known_for_department: "Acting",
+    });
+    query.andWhere("actor.adult = :adult", { adult: false });
+    query.andWhere("actor.popularity > :popularity", { popularity: 1 });
     query.select(["actor.name", "actor.tmdbId", "actor.id"]);
-    query.orderBy("actor.popularity", "ASC");
+    query.orderBy("actor.popularity", "DESC");
     query.take(10);
     return await query.getMany();
   }

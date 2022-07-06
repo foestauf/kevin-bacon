@@ -14,14 +14,15 @@
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,
         "module": "esnext",
+        "rootDir": ".",
         "moduleResolution": "node",
         "resolveJsonModule": true,
+        "noEmit": true,
         "isolatedModules": true,
-        "outDir": "./dist",
         "composite": true,
         "jsx": "react-jsx"
     },
     "include": [
-        "./src"
+        "src"
     ]
 }
